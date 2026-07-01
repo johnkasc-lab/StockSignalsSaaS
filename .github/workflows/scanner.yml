@@ -1,0 +1,42 @@
+name: Intraday Stock Scanner for multiuser
+on:
+  schedule:
+    - cron: '*/5 3-10 * * 1-5'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance pandas requests schedule kiteconnect python-dotenv
+
+      - name: Run scanner
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LIVE_TRADING: ${{ secrets.LIVE_TRADING }}
+        run: |
+          python scheduler_multiuser.py --single-run
+
+      - name: Commit updated CSV files back to repo
+        run: |
+          git config --global user.name "Intraday Bot"
+          git config --global user.email "bot@noreply.github.com"
+          git add intraday_trades.csv alerted_today.csv open_positions.csv trade_ledger.csv
+          git diff --staged --quiet || git commit -m "Auto-update trade logs [skip ci]"
+          git push
