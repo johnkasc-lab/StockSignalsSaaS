@@ -1,0 +1,3 @@
+user_id,telegram_chat_id,name,signup_date,trial_end_date,subscription_status,plan,watchlist
+1,8411487324,John (Founder Test Account),2026-06-30,2026-07-14,trial,free_trial,DEFAULT
+2,8411487324,Test User - IT Only,2026-06-30,2026-07-14,trial,free_trial,"TCS.NS,INFY.NS,WIPRO.NS"
